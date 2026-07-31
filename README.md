@@ -3,6 +3,28 @@
 A production-style full-stack luxury fashion e-commerce platform built
 with **React + Vite**, **Node.js**, **Express**, and **MongoDB**.
 
+## HomePage
+<img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/bd9f812c-5aa4-476f-8495-059a77a07d0b" />
+<img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/ce0c1f55-bf10-4414-a25a-3174f6116c22" />
+
+## ProductPage
+<img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/1365cd84-508c-4205-975f-684aacbd11bd" />
+<img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/46ffb352-5c9a-4b75-af8b-7d19b5d3f625" />
+
+## Register
+<img width="1600" height="751" alt="image" src="https://github.com/user-attachments/assets/90f5f463-ac43-4889-ad58-7d0dc9d64b59" />
+
+## Email Verification
+<img width="1600" height="749" alt="image" src="https://github.com/user-attachments/assets/f430fc14-0114-4f19-8695-4e4249906caf" />
+
+## Admin Dashboard
+<img width="3200" height="1496" alt="image" src="https://github.com/user-attachments/assets/8f12ee10-dff5-4b36-ac01-62ef125dd57f" />
+<img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/abf4a4dc-62a2-4a22-8bcf-87f3e18ed214" />
+
+## Admin Orders
+<img width="3200" height="1498" alt="image" src="https://github.com/user-attachments/assets/91626350-5672-4669-a717-9dc608afcdf6" />
+
+
 ## Features
 
 -   Editorial luxury storefront
