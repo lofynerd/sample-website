@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Minus, Plus } from 'lucide-react';
+import posthog from 'posthog-js';
 import useCartStore from '../../store/useCartStore.js';
 import Button from '../../components/ui/Button.jsx';
 
@@ -109,7 +110,17 @@ export default function CartDrawer({ isOpen, onClose }) {
                   <span className="uppercase tracking-widest2 text-xs text-stone">Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
-                <Button variant="primary" size="lg" className="w-full">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="w-full"
+                  onClick={() =>
+                    posthog.capture('checkout_clicked', {
+                      item_count: items.reduce((sum, i) => sum + i.quantity, 0),
+                      subtotal,
+                    })
+                  }
+                >
                   Checkout
                 </Button>
                 <p className="text-[11px] text-stone text-center mt-3">

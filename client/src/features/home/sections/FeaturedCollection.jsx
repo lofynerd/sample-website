@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import posthog from 'posthog-js';
 import Reveal from '../../../components/ui/Reveal.jsx';
 import Button from '../../../components/ui/Button.jsx';
 import { FEATURED_PRODUCTS } from '../../product/mockProducts.js';
@@ -26,7 +27,18 @@ export default function FeaturedCollection() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-14">
           {FEATURED_PRODUCTS.map((product, i) => (
             <Reveal key={product.id} delay={(i % 4) * 0.08}>
-              <Link to={`/product/${product.slug}`} className="group block">
+              <Link
+                to={`/product/${product.slug}`}
+                className="group block"
+                onClick={() =>
+                  posthog.capture('product_clicked', {
+                    product_id: product.id,
+                    product_name: product.name,
+                    price: product.price,
+                    position: i,
+                  })
+                }
+              >
                 <div className="aspect-[3/4] overflow-hidden bg-sand mb-4 relative">
                   <img
                     src={product.image}
