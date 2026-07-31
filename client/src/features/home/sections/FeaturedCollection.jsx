@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
-import posthog from 'posthog-js';
+import { usePostHog } from '@posthog/react';
 import Reveal from '../../../components/ui/Reveal.jsx';
 import Button from '../../../components/ui/Button.jsx';
 import { FEATURED_PRODUCTS } from '../../product/mockProducts.js';
 
 export default function FeaturedCollection() {
+  const posthog = usePostHog();
   return (
     <section className="bg-bone py-32 px-6 md:px-10">
       <div className="max-w-7xl mx-auto">
@@ -31,11 +32,13 @@ export default function FeaturedCollection() {
                 to={`/product/${product.slug}`}
                 className="group block"
                 onClick={() =>
-                  posthog.capture('product_clicked', {
+                  posthog?.capture('product_clicked', {
                     product_id: product.id,
                     product_name: product.name,
                     price: product.price,
                     position: i,
+                    // group analytics: attribute this event to the collection group
+                    $groups: { collection: product.collection },
                   })
                 }
               >

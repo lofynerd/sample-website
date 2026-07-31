@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.8.1",
+    "nodemailer": "^6.9.16",
+    "posthog-node": "^5.47.1",
+    "@opentelemetry/sdk-node": "^0.55.0",
+    "@opentelemetry/sdk-logs": "^0.55.0",
+    "@opentelemetry/api-logs": "^0.55.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.55.0",
+    "@opentelemetry/resources": "^1.28.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1"
+  }
+}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, ShoppingBag, Menu, X } from 'lucide-react';
-import posthog from 'posthog-js';
+import { usePostHog } from '@posthog/react';
 import useCartStore from '../../store/useCartStore.js';
 import CartDrawer from '../../features/cart/CartDrawer.jsx';
 
@@ -14,6 +14,7 @@ const NAV_LINKS = [
 ];
 
 export default function Navbar() {
+  const posthog = usePostHog();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { itemCount, toggleCart, isOpen } = useCartStore((s) => ({
@@ -83,7 +84,7 @@ export default function Navbar() {
               <button
                 aria-label="Search"
                 className="hidden sm:block hover:text-accent transition-colors"
-                onClick={() => posthog.capture('search_clicked')}
+                onClick={() => posthog?.capture('search_clicked')}
               >
                 <Search size={19} strokeWidth={1.5} />
               </button>
@@ -93,7 +94,7 @@ export default function Navbar() {
               <button
                 aria-label={`Cart, ${itemCount} items`}
                 onClick={() => {
-                  if (!isOpen) posthog.capture('cart_opened', { item_count: itemCount });
+                  if (!isOpen) posthog?.capture('cart_opened', { item_count: itemCount });
                   toggleCart();
                 }}
                 className="relative hover:text-accent transition-colors"

@@ -58,6 +58,8 @@ const useCartStore = create((set, get) => ({
       variant_size: variant?.size ?? null,
       price: variant?.price ?? product.price,
       quantity,
+      // group analytics: attribute this event to the collection group, when known
+      ...(product.collection ? { $groups: { collection: product.collection } } : {}),
     });
     persist(items);
     set({ items, isOpen: true });
