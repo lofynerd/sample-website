@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePostHog } from '@posthog/react';
 import Button from '../ui/Button.jsx';
+import apiClient from '../../api/client.js';
 
 const FOOTER_COLUMNS = [
   {
@@ -23,14 +24,18 @@ export default function Footer() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
-    // TODO: wire to /api/v1/newsletter subscribe endpoint
     // No stable auth ID for guests yet, so email is used as the distinct ID fallback (unique, user-provided)
     posthog?.identify(email, { email, newsletter_subscriber: true });
-    posthog?.capture('newsletter_subscribed');
-    setSubmitted(true);
+    try {
+      await apiClient.post('/newsletter/subscribe', { email });
+      posthog?.capture('newsletter_subscribed');
+      setSubmitted(true);
+    } catch (err) {
+      posthog?.captureException(err);
+    }
   };
 
   return (

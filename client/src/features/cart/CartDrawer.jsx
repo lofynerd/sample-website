@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { X, Minus, Plus } from 'lucide-react';
 import { usePostHog } from '@posthog/react';
 import useCartStore from '../../store/useCartStore.js';
@@ -6,6 +7,7 @@ import Button from '../../components/ui/Button.jsx';
 
 export default function CartDrawer({ isOpen, onClose }) {
   const posthog = usePostHog();
+  const navigate = useNavigate();
   const items = useCartStore((s) => s.items);
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
@@ -115,12 +117,14 @@ export default function CartDrawer({ isOpen, onClose }) {
                   variant="primary"
                   size="lg"
                   className="w-full"
-                  onClick={() =>
+                  onClick={() => {
                     posthog?.capture('checkout_clicked', {
                       item_count: items.reduce((sum, i) => sum + i.quantity, 0),
                       subtotal,
-                    })
-                  }
+                    });
+                    onClose();
+                    navigate('/checkout');
+                  }}
                 >
                   Checkout
                 </Button>
