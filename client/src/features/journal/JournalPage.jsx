@@ -1,9 +1,22 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { usePostHog } from '@posthog/react';
 import Reveal from '../../components/ui/Reveal.jsx';
-import { ARTICLES } from './mockArticles.js';
+import { getArticles } from '../../api/journalApi.js';
 
 export default function JournalPage() {
+  const posthog = usePostHog();
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getArticles()
+      .then(setArticles)
+      .catch((err) => posthog?.captureException(err))
+      .finally(() => setLoading(false));
+  }, [posthog]);
+
   return (
     <>
       <Helmet>
@@ -17,27 +30,31 @@ export default function JournalPage() {
           <h1 className="font-display text-display mt-6">Field Notes</h1>
         </Reveal>
 
-        <div className="grid md:grid-cols-2 gap-x-10 gap-y-16 pb-32">
-          {ARTICLES.map((article, i) => (
-            <Reveal key={article.slug} delay={i * 0.08}>
-              <Link to={`/journal/${article.slug}`} className="group block">
-                <div className="aspect-[16/10] overflow-hidden mb-5">
-                  <img
-                    src={article.image}
-                    alt={article.title}
-                    className="w-full h-full object-cover transition-transform duration-[1200ms] ease-luxury group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <span className="text-xs uppercase tracking-widest2 text-stone">
-                  {article.category}
-                </span>
-                <h2 className="font-display text-2xl mt-2 mb-2">{article.title}</h2>
-                <p className="text-stone text-sm leading-relaxed">{article.excerpt}</p>
-              </Link>
-            </Reveal>
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-stone text-sm pb-32">Loading…</p>
+        ) : (
+          <div className="grid md:grid-cols-2 gap-x-10 gap-y-16 pb-32">
+            {articles.map((article, i) => (
+              <Reveal key={article.slug} delay={i * 0.08}>
+                <Link to={`/journal/${article.slug}`} className="group block">
+                  <div className="aspect-[16/10] overflow-hidden mb-5">
+                    <img
+                      src={article.image}
+                      alt={article.title}
+                      className="w-full h-full object-cover transition-transform duration-[1200ms] ease-luxury group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="text-xs uppercase tracking-widest2 text-stone">
+                    {article.category}
+                  </span>
+                  <h2 className="font-display text-2xl mt-2 mb-2">{article.title}</h2>
+                  <p className="text-stone text-sm leading-relaxed">{article.excerpt}</p>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Heart, ShoppingBag, Menu, X } from 'lucide-react';
+import { Search, Heart, ShoppingBag, Menu, X, User } from 'lucide-react';
 import { usePostHog } from '@posthog/react';
 import useCartStore from '../../store/useCartStore.js';
+import useAuthStore from '../../store/useAuthStore.js';
 import CartDrawer from '../../features/cart/CartDrawer.jsx';
 
 const NAV_LINKS = [
@@ -15,6 +16,7 @@ const NAV_LINKS = [
 
 export default function Navbar() {
   const posthog = usePostHog();
+  const isLoggedIn = useAuthStore((s) => Boolean(s.token));
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const { itemCount, toggleCart, isOpen } = useCartStore((s) => ({
@@ -90,6 +92,13 @@ export default function Navbar() {
               </button>
               <Link to="/wishlist" aria-label="Wishlist" className="hidden sm:block hover:text-accent transition-colors">
                 <Heart size={19} strokeWidth={1.5} />
+              </Link>
+              <Link
+                to={isLoggedIn ? '/account' : '/login'}
+                aria-label={isLoggedIn ? 'My account' : 'Sign in'}
+                className="hidden sm:block hover:text-accent transition-colors"
+              >
+                <User size={19} strokeWidth={1.5} />
               </Link>
               <button
                 aria-label={`Cart, ${itemCount} items`}

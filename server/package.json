@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
+    "seed": "node src/scripts/seed.js",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -15,6 +16,9 @@
     "mongoose": "^8.8.1",
     "nodemailer": "^6.9.16",
     "posthog-node": "^5.47.1",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "express-rate-limit": "^7.4.1",
     "@opentelemetry/sdk-node": "^0.55.0",
     "@opentelemetry/sdk-logs": "^0.55.0",
     "@opentelemetry/api-logs": "^0.55.0",

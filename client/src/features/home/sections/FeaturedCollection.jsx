@@ -1,11 +1,22 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { usePostHog } from '@posthog/react';
 import Reveal from '../../../components/ui/Reveal.jsx';
 import Button from '../../../components/ui/Button.jsx';
-import { FEATURED_PRODUCTS } from '../../product/mockProducts.js';
+import { getProducts } from '../../../api/productsApi.js';
 
 export default function FeaturedCollection() {
   const posthog = usePostHog();
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts({ limit: 4 })
+      .then(setProducts)
+      .catch((err) => posthog?.captureException(err));
+  }, [posthog]);
+
+  if (products.length === 0) return null;
+
   return (
     <section className="bg-bone py-32 px-6 md:px-10">
       <div className="max-w-7xl mx-auto">
@@ -26,7 +37,7 @@ export default function FeaturedCollection() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-14">
-          {FEATURED_PRODUCTS.map((product, i) => (
+          {products.map((product, i) => (
             <Reveal key={product.id} delay={(i % 4) * 0.08}>
               <Link
                 to={`/product/${product.slug}`}

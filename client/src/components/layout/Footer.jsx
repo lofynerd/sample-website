@@ -7,15 +7,30 @@ import apiClient from '../../api/client.js';
 const FOOTER_COLUMNS = [
   {
     title: 'Shop',
-    links: ['New Arrivals', 'Ready-to-Wear', 'Accessories', 'Gift Cards'],
+    links: [
+      { label: 'New Arrivals', to: '/collections' },
+      { label: 'Ready-to-Wear', to: '/collections?category=Outerwear,Dresses,Trousers' },
+      { label: 'Accessories', to: '/collections?category=Bags' },
+      { label: 'Gift Cards', to: '/gift-cards' },
+    ],
   },
   {
     title: 'House',
-    links: ['About', 'Craftsmanship', 'Sustainability', 'Careers'],
+    links: [
+      { label: 'About', to: '/about' },
+      { label: 'Craftsmanship', to: '/craftsmanship' },
+      { label: 'Sustainability', to: '/sustainability' },
+      { label: 'Careers', to: '/careers' },
+    ],
   },
   {
     title: 'Support',
-    links: ['Contact', 'Shipping', 'Returns', 'Size Guide'],
+    links: [
+      { label: 'Contact', to: '/contact' },
+      { label: 'Shipping', to: '/shipping' },
+      { label: 'Returns', to: '/returns' },
+      { label: 'Size Guide', to: '/size-guide' },
+    ],
   },
 ];
 
@@ -79,9 +94,12 @@ export default function Footer() {
                 </h3>
                 <ul className="flex flex-col gap-3">
                   {col.links.map((link) => (
-                    <li key={link}>
-                      <Link to="#" className="text-sm text-bone/80 hover:text-bone transition-colors">
-                        {link}
+                    <li key={link.label}>
+                      <Link
+                        to={link.to}
+                        className="text-sm text-bone/80 hover:text-bone transition-colors"
+                      >
+                        {link.label}
                       </Link>
                     </li>
                   ))}
@@ -94,8 +112,8 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-8 text-xs text-bone/50">
           <p>&copy; {new Date().getFullYear()} Maison Delulu. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="#" className="hover:text-bone transition-colors">Privacy</Link>
-            <Link to="#" className="hover:text-bone transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-bone transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-bone transition-colors">Terms</Link>
             <Link to="/architecture" className="hover:text-bone transition-colors">Architecture</Link>
           </div>
         </div>

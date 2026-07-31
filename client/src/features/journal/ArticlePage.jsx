@@ -1,14 +1,41 @@
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import { usePostHog } from '@posthog/react';
 import Reveal from '../../components/ui/Reveal.jsx';
-import { getArticleBySlug } from './mockArticles.js';
+import { getArticleBySlug } from '../../api/journalApi.js';
 import NotFoundPage from '../misc/NotFoundPage.jsx';
 
 export default function ArticlePage() {
   const { slug } = useParams();
-  const article = getArticleBySlug(slug);
+  const posthog = usePostHog();
+  const [article, setArticle] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  if (!article) return <NotFoundPage />;
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setNotFound(false);
+
+    getArticleBySlug(slug)
+      .then((data) => !cancelled && setArticle(data))
+      .catch((err) => {
+        if (err.response?.status === 404) {
+          setNotFound(true);
+        } else {
+          posthog?.captureException(err);
+        }
+      })
+      .finally(() => !cancelled && setLoading(false));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [slug, posthog]);
+
+  if (notFound) return <NotFoundPage />;
+  if (loading || !article) return <div className="pt-40 text-center text-stone text-sm">Loading…</div>;
 
   return (
     <>

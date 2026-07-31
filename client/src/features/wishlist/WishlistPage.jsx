@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Heart, Share2 } from 'lucide-react';
@@ -5,12 +6,22 @@ import { usePostHog } from '@posthog/react';
 import Reveal from '../../components/ui/Reveal.jsx';
 import Button from '../../components/ui/Button.jsx';
 import useWishlistStore from '../../store/useWishlistStore.js';
-import { FEATURED_PRODUCTS } from '../product/mockProducts.js';
+import { getProducts } from '../../api/productsApi.js';
 
 export default function WishlistPage() {
   const posthog = usePostHog();
   const { productIds, toggle } = useWishlistStore();
-  const items = FEATURED_PRODUCTS.filter((p) => productIds.includes(p.id));
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getProducts()
+      .then(setAllProducts)
+      .catch((err) => posthog?.captureException(err))
+      .finally(() => setLoading(false));
+  }, [posthog]);
+
+  const items = allProducts.filter((p) => productIds.includes(p.id));
 
   const handleShare = () => {
     posthog?.capture('wishlist_shared', { item_count: items.length });
@@ -43,7 +54,9 @@ export default function WishlistPage() {
           )}
         </div>
 
-        {items.length === 0 ? (
+        {loading ? (
+          <p className="text-stone text-sm">Loading…</p>
+        ) : items.length === 0 ? (
           <div className="text-center py-24">
             <p className="text-stone mb-8">Nothing saved yet.</p>
             <Button as={Link} to="/collections" variant="ghost">

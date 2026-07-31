@@ -5,7 +5,9 @@ import { usePostHog } from '@posthog/react';
 import Reveal from '../../components/ui/Reveal.jsx';
 import Button from '../../components/ui/Button.jsx';
 import useCartStore from '../../store/useCartStore.js';
+import useAuthStore from '../../store/useAuthStore.js';
 import apiClient from '../../api/client.js';
+import authClient from '../../api/authClient.js';
 
 export default function CheckoutPage() {
   const posthog = usePostHog();
@@ -13,8 +15,10 @@ export default function CheckoutPage() {
   const items = useCartStore((s) => s.items);
   const clearCart = useCartStore((s) => s.clearCart);
   const subtotal = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+  const authUser = useAuthStore((s) => s.user);
+  const isLoggedIn = useAuthStore((s) => Boolean(s.token));
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(authUser?.email ?? '');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,7 +30,8 @@ export default function CheckoutPage() {
 
     try {
       const distinctId = posthog?.get_distinct_id?.() ?? email;
-      const { data } = await apiClient.post('/orders', {
+      const client = isLoggedIn ? authClient : apiClient;
+      const { data } = await client.post('/orders', {
         distinctId,
         email,
         items,
@@ -53,7 +58,9 @@ export default function CheckoutPage() {
       <div className="pt-32 md:pt-40 px-6 md:px-10 max-w-3xl mx-auto pb-32">
         <Reveal className="mb-12">
           <span className="text-xs uppercase tracking-widest2 text-stone">Checkout</span>
-          <h1 className="font-display text-display mt-6">Guest Checkout</h1>
+          <h1 className="font-display text-display mt-6">
+            {isLoggedIn ? 'Checkout' : 'Guest Checkout'}
+          </h1>
         </Reveal>
 
         {items.length === 0 ? (
