@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Heart, ShoppingBag, Menu, X } from 'lucide-react';
+import posthog from 'posthog-js';
 import useCartStore from '../../store/useCartStore.js';
 import CartDrawer from '../../features/cart/CartDrawer.jsx';
 
@@ -79,7 +80,11 @@ export default function Navbar() {
               ))}
             </div>
             <div className="flex items-center gap-5">
-              <button aria-label="Search" className="hidden sm:block hover:text-accent transition-colors">
+              <button
+                aria-label="Search"
+                className="hidden sm:block hover:text-accent transition-colors"
+                onClick={() => posthog.capture('search_clicked')}
+              >
                 <Search size={19} strokeWidth={1.5} />
               </button>
               <Link to="/wishlist" aria-label="Wishlist" className="hidden sm:block hover:text-accent transition-colors">
@@ -87,7 +92,10 @@ export default function Navbar() {
               </Link>
               <button
                 aria-label={`Cart, ${itemCount} items`}
-                onClick={toggleCart}
+                onClick={() => {
+                  if (!isOpen) posthog.capture('cart_opened', { item_count: itemCount });
+                  toggleCart();
+                }}
                 className="relative hover:text-accent transition-colors"
               >
                 <ShoppingBag size={19} strokeWidth={1.5} />

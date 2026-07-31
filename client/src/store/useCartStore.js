@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import posthog from 'posthog-js';
 
 // Cart store: persists items to localStorage for the slide-out cart drawer
 const STORAGE_KEY = 'maison_delulu_cart_v1';
@@ -49,14 +50,31 @@ const useCartStore = create((set, get) => ({
       });
     }
 
+    posthog.capture('cart_item_added', {
+      product_id: product.id,
+      product_name: product.name,
+      variant_id: variant?.id ?? null,
+      variant_color: variant?.color ?? null,
+      variant_size: variant?.size ?? null,
+      price: variant?.price ?? product.price,
+      quantity,
+    });
     persist(items);
     set({ items, isOpen: true });
   },
 
   removeItem: (productId, variantId) => {
+    const removed = get().items.find(
+      (item) => item.productId === productId && item.variantId === variantId
+    );
     const items = get().items.filter(
       (item) => !(item.productId === productId && item.variantId === variantId)
     );
+    posthog.capture('cart_item_removed', {
+      product_id: productId,
+      product_name: removed?.name ?? null,
+      variant_id: variantId,
+    });
     persist(items);
     set({ items });
   },
