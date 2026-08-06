@@ -38,6 +38,21 @@ export async function getOrders(params = {}) {
   return data;
 }
 
+export async function getOrder(id) {
+  const { data } = await adminClient.get(`/orders/id/${id}`);
+  return data;
+}
+
+export async function updateOrderStatus(id, status, note) {
+  const { data } = await adminClient.patch(`/orders/id/${id}/status`, { status, note });
+  return data;
+}
+
+export async function getAuditLog(params = {}) {
+  const { data } = await adminClient.get('/audit-log', { params });
+  return data;
+}
+
 export async function getSubscribers(params = {}) {
   const { data } = await adminClient.get('/subscribers', { params });
   return data;

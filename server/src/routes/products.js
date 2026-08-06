@@ -2,16 +2,21 @@ import { Router } from 'express';
 import Product from '../models/Product.js';
 import { logger } from '../lib/logs.js';
 import { requireAdmin } from '../middleware/requireAdmin.js';
+import { recordAuditLog } from '../lib/auditLog.js';
 
 const router = Router();
 
-// GET /api/v1/products - list products, supports pagination, filtering, and sorting
+// GET /api/v1/products - list products, supports pagination, filtering, sorting, and search
 router.get('/', async (req, res) => {
-  const { collection, category, limit = 20, offset = 0, sort = '-createdAt' } = req.query;
+  const { collection, category, search, limit = 20, offset = 0, sort = '-createdAt' } = req.query;
 
   const filter = {};
   if (collection) filter.collection = collection;
   if (category) filter.category = { $in: category.split(',') };
+  if (search) {
+    const pattern = new RegExp(search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    filter.$or = [{ name: pattern }, { slug: pattern }, { category: pattern }, { collection: pattern }];
+  }
 
   try {
     const [results, count] = await Promise.all([
@@ -33,6 +38,13 @@ router.get('/', async (req, res) => {
 router.post('/', requireAdmin, async (req, res) => {
   try {
     const product = await Product.create(req.body);
+    recordAuditLog({
+      entityType: 'product',
+      entityId: product._id.toString(),
+      entityLabel: product.name,
+      action: 'create',
+      editedBy: req.admin.username,
+    });
     res.status(201).json(product);
   } catch (err) {
     if (err.code === 11000) {
@@ -58,11 +70,24 @@ router.get('/:slug', async (req, res) => {
 // PATCH /api/v1/products/id/:id - admin-only: update a product by Mongo _id
 router.patch('/id/:id', requireAdmin, async (req, res) => {
   try {
+    const before = await Product.findById(req.params.id);
+    if (!before) return res.status(404).json({ error: 'Product not found' });
+
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    recordAuditLog({
+      entityType: 'product',
+      entityId: product._id.toString(),
+      entityLabel: product.name,
+      action: 'update',
+      before: before.toObject(),
+      after: product.toObject(),
+      editedBy: req.admin.username,
+    });
+
     res.json(product);
   } catch (err) {
     logger.emit({ severityText: 'error', body: 'failed to update product', attributes: { error: err.message } });
@@ -75,6 +100,15 @@ router.delete('/id/:id', requireAdmin, async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     if (!product) return res.status(404).json({ error: 'Product not found' });
+
+    recordAuditLog({
+      entityType: 'product',
+      entityId: product._id.toString(),
+      entityLabel: product.name,
+      action: 'delete',
+      editedBy: req.admin.username,
+    });
+
     res.status(204).end();
   } catch (err) {
     logger.emit({ severityText: 'error', body: 'failed to delete product', attributes: { error: err.message } });

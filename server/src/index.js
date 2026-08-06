@@ -16,6 +16,7 @@ import contactRouter from './routes/contact.js';
 import analyticsRouter from './routes/analytics.js';
 import authRouter from './routes/auth.js';
 import wishlistRouter from './routes/wishlist.js';
+import auditLogRouter from './routes/auditLog.js';
 
 initLogs();
 await connectDB();
@@ -40,6 +41,7 @@ app.use('/api/v1/contact', contactRouter);
 app.use('/api/v1/analytics', analyticsRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/wishlist', wishlistRouter);
+app.use('/api/v1/audit-log', auditLogRouter);
 
 // Register error handler after routes to capture Express errors in PostHog Error Tracking
 if (posthog) {
