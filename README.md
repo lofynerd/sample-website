@@ -3,6 +3,8 @@
 A production-style full-stack luxury fashion e-commerce platform built
 with **React + Vite**, **Node.js**, **Express**, and **MongoDB**.
 
+## Complete Blog on "https://medium.com/@workwitharpanraj/building-a-luxury-mern-e-commerce-website-from-scratch-part-0-f576b4432cd7"
+
 ## HomePage
 <img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/bd9f812c-5aa4-476f-8495-059a77a07d0b" />
 <img width="3200" height="1500" alt="image" src="https://github.com/user-attachments/assets/ce0c1f55-bf10-4414-a25a-3174f6116c22" />
